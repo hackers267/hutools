@@ -1,10 +1,11 @@
 use super::get_duration::get_duration;
-use chrono::{Date, TimeZone};
+use chrono::Duration;
 
 #[cfg(test)]
 mod test {
+    use chrono::{Local, TimeZone};
+
     use super::*;
-    use chrono::Local;
 
     #[test]
     fn between_days_test() {
@@ -13,9 +14,14 @@ mod test {
         let days = between_days((start, end));
         assert_eq!(days, 8)
     }
+    #[test]
+    fn between_days_with_time_test() {
+        let start = Local.ymd(2022, 9, 12).and_hms(12, 0, 0);
+        let end = Local.ymd(2022, 9, 20).and_hms(0, 0, 0);
+        let days = between_days((start, end));
+        assert_eq!(days, 7)
+    }
 }
-
-type DateRange<T> = (Date<T>, Date<T>);
 
 ///
 /// 计算一个时间范围内的天数
@@ -35,7 +41,10 @@ type DateRange<T> = (Date<T>, Date<T>);
 /// let days = between_days((start,end));
 /// assert_eq!(days, 8);
 /// ```
-pub fn between_days<T: TimeZone>(date_range: DateRange<T>) -> i64 {
+pub fn between_days<T>(date_range: (T, T)) -> i64
+where
+    T: std::ops::Sub<Output = Duration>,
+{
     let duration = get_duration(date_range);
     duration.num_days()
 }
