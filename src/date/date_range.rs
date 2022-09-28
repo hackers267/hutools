@@ -135,6 +135,16 @@ impl<T> Interval for DateRange<T>
 where
     T: std::ops::Sub<Output = Duration> + PartialOrd,
 {
+    /**
+     * 判断两个时间段之间的关系：`Relation`:
+     *
+     * - `Relation::Left` 另一个时间段早于当前时间段
+     * - `Relation::LeftIntersection` 另一个时间和当前时间段在开始时有重叠
+     * - `Relation::Include` 另一个时间段是当前时间段的一部分
+     * - `Relation::RightIntersection` 另一个时间段和当前时间段在结束时有重叠
+     * - `Relation::Right` 另一个时间段晚于当前时间段
+     * - `Relation::Included` 当前时间段是另一个时间段的一部分
+     */
     fn relation(&self, another: &DateRange<T>) -> Relation {
         let DateRange { start, end } = self;
         let DateRange {
