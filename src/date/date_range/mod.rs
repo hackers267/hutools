@@ -2,6 +2,7 @@
 mod test {
     use super::*;
     use chrono::{Date, Local, TimeZone};
+
     #[test]
     fn days_test() {
         let date_range = get_date_range();
@@ -93,13 +94,14 @@ mod test {
 
 use crate::interval::{Interval, Relation};
 use chrono::Duration;
+use std::ops::Sub;
 
 /** 一个连续的时间区间,可以解析其中包含的日，时分等。
  */
 #[derive(Ord, PartialOrd, Eq, PartialEq, Debug)]
 pub struct DateRange<T>
 where
-    T: std::ops::Sub<Output = Duration>,
+    T: Sub<Output = Duration>,
 {
     /// 时间区间的开始
     pub start: T,
@@ -109,7 +111,7 @@ where
 
 impl<T> DateRange<T>
 where
-    T: std::ops::Sub<Output = Duration>,
+    T: Sub<Output = Duration>,
 {
     fn get_duration(self) -> Duration {
         self.end - self.start
@@ -133,7 +135,7 @@ where
 
 impl<T> Interval for DateRange<T>
 where
-    T: std::ops::Sub<Output = Duration> + PartialOrd,
+    T: Sub<Output = Duration> + PartialOrd,
 {
     /**
      * 判断两个时间段之间的关系：`Relation`:
@@ -167,6 +169,73 @@ where
             Relation::LeftIntersection
         } else {
             Relation::RightIntersection
+        }
+    }
+}
+impl<T> DateRange<T>
+where
+    T: Sub<Output = Duration> + PartialOrd,
+{
+    /// 实现区间和另一个时间段之间的差集计算
+    ///
+    /// # Arguments
+    ///
+    /// * `another`: 另一个时间段
+    ///
+    /// returns: Vec<DateRange<T>, Global>
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chrono::{Local, TimeZone};
+    /// use hutools::date::DateRange;
+    /// let date_range = DateRange{start:Local.ymd(2022,5,1),end:Local.ymd(2022,10,1)};
+    /// let another_range = DateRange{start:Local.ymd(2022,8,1),end:Local.ymd(2022,12,1)};
+    /// let result = date_range.diff(another_range);
+    /// assert_eq!(result,vec![DateRange{start:Local.ymd(2022,5,1),end:Local.ymd(2022,8,1)}])
+    /// ```
+    pub fn diff(self, another: Self) -> Vec<DateRange<T>> {
+        let relation = self.relation(&another);
+        match relation {
+            Relation::Left => vec![self],
+            Relation::LeftIntersection => {
+                let DateRange { end, start: _ } = self;
+                let DateRange {
+                    end: start,
+                    start: _,
+                } = another;
+                vec![DateRange { start, end }]
+            }
+            Relation::Include => {
+                let DateRange { start, end } = self;
+                let DateRange {
+                    start: other_start,
+                    end: other_end,
+                } = another;
+                vec![
+                    DateRange {
+                        start,
+                        end: other_start,
+                    },
+                    DateRange {
+                        start: other_end,
+                        end,
+                    },
+                ]
+            }
+            Relation::RightIntersection => {
+                let DateRange { start, end: _ } = self;
+                let DateRange {
+                    start: other_start,
+                    end: _,
+                } = another;
+                vec![DateRange {
+                    start,
+                    end: other_start,
+                }]
+            }
+            Relation::Right => vec![self],
+            Relation::Included => vec![],
         }
     }
 }
