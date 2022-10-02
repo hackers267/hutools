@@ -6,8 +6,7 @@ mod between_weeks;
 mod date_range;
 mod get_duration;
 
-pub use age::age;
-pub use age::age_of_now;
+pub use age::{age, age_from_string, age_of_now};
 pub use between_days::between_days;
 pub use between_hours::between_hours;
 pub use between_minutes::between_minutes;
