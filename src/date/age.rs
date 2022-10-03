@@ -1,4 +1,4 @@
-use chrono::{Date, NaiveDate, TimeZone, Utc};
+use chrono::{Date, NaiveDate, ParseResult, TimeZone, Utc};
 
 #[cfg(test)]
 mod test {
@@ -19,6 +19,24 @@ mod test {
         let date = "2022-02-01";
         let age = age_from_string(birthday, date, None);
         assert_eq!(age, Some(22));
+    }
+    #[test]
+    fn date_from_str_test() {
+        let date = "2008-08-08";
+        let date = date_utc_from_str(date, None);
+        assert_eq!(date, Ok(Utc.ymd(2008, 8, 8)));
+    }
+    #[test]
+    fn date_from_str_error() {
+        let date = "2008-08-08 08:08:08";
+        let date = date_utc_from_str(date, None);
+        assert!(date.is_err())
+    }
+    #[test]
+    fn date_from_str_with_time() {
+        let date = "2008-08-08 08:08:08";
+        let date = date_utc_from_str(date, Some("%F %T"));
+        assert_eq!(date, Ok(Utc.ymd(2008, 8, 8)));
     }
 }
 
@@ -85,9 +103,24 @@ pub fn age<Tz: TimeZone>(birthday: Date<Tz>, date: Date<Tz>) -> Option<u32> {
 /// ```
 pub fn age_from_string(birthday: &str, date: &str, formatter: Option<&str>) -> Option<u32> {
     let formatter = formatter.unwrap_or("%F");
-    let birthday_naive_date = NaiveDate::parse_from_str(birthday, formatter).unwrap();
-    let birthday: Date<Utc> = Utc.from_utc_date(&birthday_naive_date);
+    let birthday = date_utc_from_str(birthday, None).expect("Invalid date");
     let date_naive = NaiveDate::parse_from_str(date, formatter).unwrap();
     let date = Utc.from_utc_date(&date_naive);
     age(birthday, date)
+}
+
+///
+/// 从字符串转换为Date<Utc>
+/// # Arguments
+///
+/// * `s`: 字符串
+/// * `formatter`: 格式化标记，如 Some(`%Y-%m-%d`),如果是None,则使用默认值 `%Y-%m-%d`
+///
+/// returns: Result<Date<Utc>, ParseError>
+///
+fn date_utc_from_str(s: &str, formatter: Option<&str>) -> ParseResult<Date<Utc>> {
+    let formatter = formatter.unwrap_or("%F");
+    let naive_date = NaiveDate::parse_from_str(s, formatter)?;
+    let date = Utc.from_utc_date(&naive_date);
+    Ok(date)
 }
