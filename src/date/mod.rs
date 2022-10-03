@@ -1,4 +1,5 @@
 mod age;
+mod begin;
 mod between_days;
 mod between_hours;
 mod between_minutes;
@@ -12,3 +13,4 @@ pub use between_hours::between_hours;
 pub use between_minutes::between_minutes;
 pub use between_weeks::between_weeks;
 pub use date_range::DateRange;
+pub use begin::begin_of_day;
