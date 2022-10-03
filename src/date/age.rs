@@ -17,7 +17,7 @@ mod test {
     fn age_from_string_test() {
         let birthday = "2000-01-01";
         let date = "2022-02-01";
-        let age = age_from_string(birthday, date, None);
+        let age = age_from_str(birthday, date, None);
         assert_eq!(age, Some(22));
     }
     #[test]
@@ -54,6 +54,23 @@ mod test {
 pub fn age_of_now<Tz: TimeZone>(birthday: Date<Tz>) -> Option<u32> {
     let today = Utc::today();
     let birthday = birthday.with_timezone(&Utc);
+    age(birthday, today)
+}
+
+///
+/// 计算截止到今天的年龄
+/// # Arguments
+///
+/// * `birthday`: 字符串格式的年龄格式
+///
+/// returns: Option<u32>
+///
+/// - Some(u32) 当前年龄
+/// - None 生日比当前要晚
+///
+pub fn age_of_now_str(birthday: &str) -> Option<u32> {
+    let today = Utc::today();
+    let birthday = date_utc_from_str(birthday, None).unwrap();
     age(birthday, today)
 }
 
@@ -95,13 +112,13 @@ pub fn age<Tz: TimeZone>(birthday: Date<Tz>, date: Date<Tz>) -> Option<u32> {
 /// # Examples
 ///
 /// ```
-/// use hutools::date::age_from_string;
+/// use hutools::date::age_from_str;
 /// let birthday = "2000-01-01";
 /// let date = "2012-02-01";
-/// let age = age_from_string(birthday,date,None);
+/// let age = age_from_str(birthday,date,None);
 /// assert_eq!(age,Some(12));
 /// ```
-pub fn age_from_string(birthday: &str, date: &str, formatter: Option<&str>) -> Option<u32> {
+pub fn age_from_str(birthday: &str, date: &str, formatter: Option<&str>) -> Option<u32> {
     let formatter = formatter.unwrap_or("%F");
     let birthday = date_utc_from_str(birthday, None).expect("Invalid date");
     let date_naive = NaiveDate::parse_from_str(date, formatter).unwrap();
