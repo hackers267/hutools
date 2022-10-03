@@ -61,5 +61,5 @@ pub fn begin_of_year<Tz: TimeZone>(date: Date<Tz>) -> Option<Date<Tz>> {
 /// assert_eq!(Some(actual),result);
 /// ```
 pub fn begin_of_year_with_time<Tz: TimeZone>(datetime: DateTime<Tz>) -> Option<Date<Tz>> {
-    datetime.date().with_month(1)?.with_day(1)
+    begin_of_year(datetime.date())
 }
