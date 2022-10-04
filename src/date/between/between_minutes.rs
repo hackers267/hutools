@@ -1,4 +1,4 @@
-use super::get_duration::get_duration;
+use crate::date::get_duration::get_duration;
 use chrono::Duration;
 
 #[cfg(test)]

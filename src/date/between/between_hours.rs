@@ -19,7 +19,7 @@ mod test {
     }
 }
 
-use super::get_duration::get_duration;
+use crate::date::get_duration::get_duration;
 use chrono::Duration;
 
 /// 计算一个时间范围内的小时数
