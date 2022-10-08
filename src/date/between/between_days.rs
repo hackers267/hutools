@@ -12,14 +12,14 @@ mod test {
         let start = Local.ymd(2022, 9, 12);
         let end = Local.ymd(2022, 9, 20);
         let days = between_days((start, end));
-        assert_eq!(days, 8)
+        assert_eq!(days.unwrap(), 8)
     }
     #[test]
     fn between_days_with_time_test() {
         let start = Local.ymd(2022, 9, 12).and_hms(12, 0, 0);
         let end = Local.ymd(2022, 9, 20).and_hms(0, 0, 0);
         let days = between_days((start, end));
-        assert_eq!(days, 7)
+        assert_eq!(days.unwrap(), 7)
     }
 }
 
@@ -39,12 +39,12 @@ mod test {
 /// let start = Local.ymd(2000,8,12);
 /// let end = Local.ymd(2000,8,20);
 /// let days = between_days((start,end));
-/// assert_eq!(days, 8);
+/// assert_eq!(days.unwrap(), 8);
 /// ```
-pub fn between_days<T>(date_range: (T, T)) -> i64
+pub fn between_days<T>(date_range: (T, T)) -> Option<i64>
 where
     T: std::ops::Sub<Output = Duration>,
 {
     let duration = get_duration(date_range);
-    duration.num_days()
+    Some(duration.num_days())
 }

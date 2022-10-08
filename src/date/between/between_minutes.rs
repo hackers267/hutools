@@ -10,14 +10,14 @@ mod test {
         let start = Local.ymd(2022, 5, 1);
         let end = Local.ymd(2022, 5, 2);
         let minutes = between_minutes((start, end));
-        assert_eq!(minutes, 1440);
+        assert_eq!(minutes.unwrap(), 1440);
     }
     #[test]
     fn between_minutes_with_time_test() {
         let start = Local.ymd(2022, 5, 1).and_hms(12, 11, 0);
         let end = Local.ymd(2022, 5, 2).and_hms(0, 10, 0);
         let minutes = between_minutes((start, end));
-        assert_eq!(minutes, 719);
+        assert_eq!(minutes.unwrap(), 719);
     }
 }
 /// 计算时间段内含有的分钟数
@@ -36,12 +36,12 @@ mod test {
 /// let start = Local.ymd(2022,8,1).and_hms(12,11,0);
 /// let end = Local.ymd(2022,8,2).and_hms(0,0,0);
 /// let minutes = between_minutes((start,end));
-/// assert_eq!(minutes,709);
+/// assert_eq!(minutes.unwrap(),709);
 /// ```
-pub fn between_minutes<T>(date_range: (T, T)) -> i64
+pub fn between_minutes<T>(date_range: (T, T)) -> Option<i64>
 where
     T: std::ops::Sub<Output = Duration>,
 {
     let duration = get_duration(date_range);
-    duration.num_minutes()
+    Some(duration.num_minutes())
 }

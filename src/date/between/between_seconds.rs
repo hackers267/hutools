@@ -13,7 +13,7 @@ mod test {
         let date_range = (start, end);
         let result = between_seconds(date_range);
         let actual = 12 * 60 * 60;
-        assert_eq!(result, actual);
+        assert_eq!(result.unwrap(), actual);
     }
 }
 
@@ -35,12 +35,12 @@ mod test {
 /// let date_range = (start, end);
 /// let result = between_seconds(date_range);
 /// let actual = 12*60*60;
-/// assert_eq!(result, actual);
+/// assert_eq!(result.unwrap(), actual);
 /// ```
-pub fn between_seconds<T>(date_range: (T, T)) -> i64
+pub fn between_seconds<T>(date_range: (T, T)) -> Option<i64>
 where
     T: std::ops::Sub<Output = Duration>,
 {
     let duration = get_duration(date_range);
-    duration.num_seconds()
+    Some(duration.num_seconds())
 }

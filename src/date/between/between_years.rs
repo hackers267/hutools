@@ -35,9 +35,11 @@ mod test {
     }
 }
 
-pub fn between_years<Tz: TimeZone>(date_range: (Date<Tz>, Date<Tz>)) -> Option<u32> {
+pub fn between_years<Tz: TimeZone>(date_range: (Date<Tz>, Date<Tz>)) -> Option<i64> {
     let (start, end) = date_range;
+    let symbol = if start <= end { 1 } else { -1 };
     end.years_since(start)
+        .and_then(|x| (x as i64).checked_mul(symbol))
 }
 
 pub fn between_years_with_time<Tz: TimeZone>(

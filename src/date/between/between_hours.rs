@@ -8,14 +8,14 @@ mod test {
         let start = Local.ymd(2022, 9, 12);
         let end = Local.ymd(2022, 9, 20);
         let hours = between_hours((start, end));
-        assert_eq!(hours, 192)
+        assert_eq!(hours.unwrap(), 192)
     }
     #[test]
     fn between_hours_time_test() {
         let start = Local.ymd(2000, 8, 10).and_hms(18, 0, 0);
         let end = Local.ymd(2000, 8, 12).and_hms(19, 0, 0);
         let hours = between_hours((start, end));
-        assert_eq!(hours, 49)
+        assert_eq!(hours.unwrap(), 49)
     }
 }
 
@@ -38,12 +38,12 @@ use chrono::Duration;
 /// let start = Local.ymd(2000,8,12);
 /// let end = Local.ymd(2000,8,18);
 /// let hours = between_hours((start,end));
-/// assert_eq!(hours,144);
+/// assert_eq!(hours.unwrap(),144);
 /// ```
-pub fn between_hours<T>(date_range: (T, T)) -> i64
+pub fn between_hours<T>(date_range: (T, T)) -> Option<i64>
 where
     T: std::ops::Sub<Output = Duration>,
 {
     let duration = get_duration(date_range);
-    duration.num_hours()
+    Some(duration.num_hours())
 }
