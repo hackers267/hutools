@@ -3,7 +3,7 @@ use chrono::{Date, DateTime, TimeZone};
 #[cfg(test)]
 mod test {
     use super::*;
-    use chrono::{Duration, TimeZone, Utc};
+    use chrono::{TimeZone, Utc};
 
     #[test]
     fn test_between_years_with_time() {
