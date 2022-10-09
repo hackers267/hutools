@@ -13,7 +13,7 @@ mod test {
         assert_eq!(result, actual);
     }
 }
-
+/// Get the end of a day.
 /// 获取某天的结束时间
 ///
 /// # Arguments

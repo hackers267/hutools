@@ -3,19 +3,19 @@ use chrono::{DateTime, TimeZone, Timelike};
 #[cfg(test)]
 mod test {
     use super::*;
-    use chrono::Utc;
+    use chrono::{TimeZone, Utc};
 
     #[test]
-    fn test_end_of_hour() {
+    fn test_end_of_minute() {
         let datetime = Utc.ymd(2008, 8, 8).and_hms(8, 8, 8);
-        let result = end_of_hour(datetime);
-        let actual = Utc.ymd(2008, 8, 8).and_hms(8, 59, 59);
+        let result = end_of_minute(datetime);
+        let actual = Utc.ymd(2008, 8, 8).and_hms(8, 8, 59);
         assert_eq!(result, actual);
     }
 }
 
-/// Get the end of an hour.
-/// 获取某个小时的结束时间
+/// Get the end of a minute.
+/// 获取某分钟的结束时间
 ///
 /// # Arguments
 ///
@@ -27,15 +27,15 @@ mod test {
 ///
 /// ```
 /// use chrono::{TimeZone, Utc};
-/// use hutools::date::end_of_hour;
+/// use hutools::date::end_of_minute;
 /// let datetime = Utc.ymd(2008,8,8).and_hms(8,8,8);
-/// let result = end_of_hour(datetime);
-/// let actual = Utc.ymd(2008,8,8).and_hms(8,59,59);
+/// let result = end_of_minute(datetime);
+/// let actual = Utc.ymd(2008,8,8).and_hms(8,8,59);
 /// assert_eq!(result, actual);
 /// ```
-pub fn end_of_hour<Tz>(datetime: DateTime<Tz>) -> DateTime<Tz>
+pub fn end_of_minute<Tz>(datetime: DateTime<Tz>) -> DateTime<Tz>
 where
     Tz: TimeZone,
 {
-    datetime.with_minute(59).unwrap().with_second(59).unwrap()
+    datetime.with_second(59).unwrap()
 }
