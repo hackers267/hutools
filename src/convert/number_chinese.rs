@@ -37,6 +37,18 @@ mod tests {
     }
 }
 
+enum ChineseNumberUnit {
+    Simple,
+    Complex,
+    SimpleMoney,
+    ComplexMoney,
+}
+
+struct ChineseNumber<'a> {
+    value: &'a str,
+    unit: ChineseNumberUnit,
+}
+
 pub fn chinese_number(mut number: u32) -> String {
     let section_unit_char = ["", "万", "亿", "万亿"];
     let mut unit_pos = 0;
