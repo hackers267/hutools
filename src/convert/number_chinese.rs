@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -42,6 +44,19 @@ mod tests {
         let chinese = ChineseNumber::from(number).to_string();
         let result = ChineseNumber::from(chinese);
         assert_eq!(result.value, number);
+    }
+    #[test]
+    fn chinese_calc_test() {
+        let chinese = ChineseNumber::from(1234);
+        let other_chinese = ChineseNumber::from(4321);
+        let result = chinese + other_chinese;
+        assert_eq!(result.value, 5555);
+    }
+    #[test]
+    fn chinese_calc_with_u32_test() {
+        let chinese = ChineseNumber::from(1234);
+        let result = chinese + 4321;
+        assert_eq!(result.value, 5555)
     }
 }
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -135,6 +150,92 @@ impl ChineseNumber {
             value: self.value,
             unit: ChineseNumberUnit::ComplexMoney,
         }
+    }
+}
+
+impl Add for ChineseNumber {
+    type Output = ChineseNumber;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let value = self.value + rhs.value;
+        ChineseNumber {
+            value,
+            unit: self.unit,
+        }
+    }
+}
+impl Add<u32> for ChineseNumber {
+    type Output = ChineseNumber;
+    fn add(self, rhs: u32) -> Self::Output {
+        ChineseNumber {
+            unit: self.unit,
+            value: self.value + rhs,
+        }
+    }
+}
+
+impl AddAssign for ChineseNumber {
+    fn add_assign(&mut self, rhs: Self) {
+        self.value += rhs.value;
+    }
+}
+
+impl AddAssign<u32> for ChineseNumber {
+    fn add_assign(&mut self, rhs: u32) {
+        self.value -= rhs;
+    }
+}
+
+impl Sub for ChineseNumber {
+    type Output = ChineseNumber;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let value = self.value - rhs.value;
+        ChineseNumber {
+            value,
+            unit: self.unit,
+        }
+    }
+}
+
+impl SubAssign for ChineseNumber {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.value = self.value - rhs.value;
+    }
+}
+
+impl Mul for ChineseNumber {
+    type Output = ChineseNumber;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let value = self.value * rhs.value;
+        ChineseNumber {
+            value,
+            unit: self.unit,
+        }
+    }
+}
+
+impl MulAssign for ChineseNumber {
+    fn mul_assign(&mut self, rhs: Self) {
+        self.value = self.value * rhs.value
+    }
+}
+impl Div for ChineseNumber {
+    type Output = ChineseNumber;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        let value = self.value / rhs.value;
+        ChineseNumber {
+            value,
+            unit: self.unit,
+        }
+    }
+}
+
+impl DivAssign for ChineseNumber {
+    fn div_assign(&mut self, rhs: Self) {
+        self.value = self.value / rhs.value
     }
 }
 
