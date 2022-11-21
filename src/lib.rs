@@ -1,4 +1,8 @@
 /**
+常用算法
+*/
+pub mod algo;
+/**
 convert
 转换
 */
