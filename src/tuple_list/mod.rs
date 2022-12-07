@@ -12,6 +12,18 @@ where
         let target = self.1;
         source.into_iter().filter(|x| !target.contains(x)).collect()
     }
+    /// Get the difference of two arrays in the TupleList by the predicate
+    pub fn diff_by<F>(self, predicate: F) -> Vec<T>
+    where
+        F: Fn(&T, &T) -> bool,
+    {
+        let source = self.0;
+        let target = self.1;
+        source
+            .into_iter()
+            .filter(|x| return !target.iter().any(|v| predicate(x, v)))
+            .collect()
+    }
     /// Get the intersection of two arrays in the TupleList
     /// 取得TupleList中两个数组中交集
     pub fn intersect(self) -> Vec<T> {
@@ -38,12 +50,54 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[derive(Debug, Eq, PartialEq, Clone)]
+    struct User {
+        name: String,
+        age: u8,
+    }
+
     #[test]
     fn diff_test() {
         let tuple_list = TupleList(vec![1, 2, 3], vec![2, 3, 4]);
         let result = tuple_list.diff();
         assert_eq!(result, vec![1])
     }
+
+    #[test]
+    fn diff_by_test() {
+        let tuple_list = TupleList(
+            vec![
+                User {
+                    name: "rust".to_string(),
+                    age: 16,
+                },
+                User {
+                    name: "mdbook".to_string(),
+                    age: 12,
+                },
+            ],
+            vec![
+                User {
+                    name: "rust".to_string(),
+                    age: 16,
+                },
+                User {
+                    name: "cargo".to_string(),
+                    age: 18,
+                },
+            ],
+        );
+        let result = tuple_list.diff_by(|x, v| x.name == v.name);
+        assert_eq!(
+            result,
+            vec![User {
+                name: "mdbook".to_string(),
+                age: 12
+            }]
+        )
+    }
+
     #[test]
     fn intersect_test() {
         let tuple_list = TupleList(vec![1, 2, 3], vec![2, 3, 4]);
