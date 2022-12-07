@@ -13,6 +13,7 @@ where
         source.into_iter().filter(|x| !target.contains(x)).collect()
     }
     /// Get the difference of two arrays in the TupleList by the predicate
+    /// 通过指定的方法取得TupleList中两个数组的差集
     pub fn diff_by<F>(self, predicate: F) -> Vec<T>
     where
         F: Fn(&T, &T) -> bool,
@@ -31,6 +32,19 @@ where
         let target = self.1;
         source.into_iter().filter(|x| target.contains(x)).collect()
     }
+    /// Get the intersection of two arrays in the TupleList by the predicate
+    /// 通过指定的方法取得TupleList中两个数组的交集
+    pub fn intersect_by<F>(self, predicate: F) -> Vec<T>
+    where
+        F: Fn(&T, &T) -> bool,
+    {
+        let source = self.0;
+        let target = self.1;
+        source
+            .into_iter()
+            .filter(|x| return target.iter().any(|v| predicate(x, v)))
+            .collect()
+    }
     /// Get the rev of two arrays in the TupleList
     /// 反转TupleList的两个数组的位置
     pub fn rev(self) -> TupleList<T> {
@@ -42,6 +56,16 @@ where
     /// 取得TupleList中两个数组的合集
     pub fn union(self) -> Vec<T> {
         let other = self.clone().diff();
+        let target = self.1;
+        [other, target].concat()
+    }
+    /// Get the union of two arrays in the TupleList by the predicate
+    /// 通过指定的方法取得TupleList中两个数组的合集
+    pub fn union_by<F>(self, predicate: F) -> Vec<T>
+    where
+        F: Fn(&T, &T) -> bool,
+    {
+        let other = self.clone().diff_by(predicate);
         let target = self.1;
         [other, target].concat()
     }
@@ -66,7 +90,26 @@ mod tests {
 
     #[test]
     fn diff_by_test() {
-        let tuple_list = TupleList(
+        let tuple_list = get_user_tuple_list();
+        let result = tuple_list.diff_by(|x, v| x.name == v.name);
+        assert_eq!(
+            result,
+            vec![User {
+                name: "mdbook".to_string(),
+                age: 12
+            }]
+        )
+    }
+
+    #[test]
+    fn intersect_test() {
+        let tuple_list = TupleList(vec![1, 2, 3], vec![2, 3, 4]);
+        let result = tuple_list.intersect();
+        assert_eq!(result, vec![2, 3])
+    }
+
+    fn get_user_tuple_list() -> TupleList<User> {
+        TupleList(
             vec![
                 User {
                     name: "rust".to_string(),
@@ -87,28 +130,48 @@ mod tests {
                     age: 18,
                 },
             ],
-        );
-        let result = tuple_list.diff_by(|x, v| x.name == v.name);
-        assert_eq!(
-            result,
-            vec![User {
-                name: "mdbook".to_string(),
-                age: 12
-            }]
         )
     }
 
     #[test]
-    fn intersect_test() {
-        let tuple_list = TupleList(vec![1, 2, 3], vec![2, 3, 4]);
-        let result = tuple_list.intersect();
-        assert_eq!(result, vec![2, 3])
+    fn intersect_by_test() {
+        let tuple_list = get_user_tuple_list();
+        let result = tuple_list.intersect_by(|x, v| x.name == v.name);
+        assert_eq!(
+            result,
+            vec![User {
+                name: "rust".to_string(),
+                age: 16
+            }]
+        )
     }
     #[test]
     fn union_test() {
         let tuple_list = TupleList(vec![1, 2, 3], vec![2, 3, 4]);
         let result = tuple_list.union();
         assert_eq!(result, vec![1, 2, 3, 4])
+    }
+    #[test]
+    fn union_by_test() {
+        let tuple_list = get_user_tuple_list();
+        let result = tuple_list.union_by(|x, v| x.name == v.name);
+        assert_eq!(
+            result,
+            vec![
+                User {
+                    name: "mdbook".to_string(),
+                    age: 12
+                },
+                User {
+                    name: "rust".to_string(),
+                    age: 16
+                },
+                User {
+                    name: "cargo".to_string(),
+                    age: 18
+                }
+            ]
+        )
     }
     #[test]
     fn rev_test() {
