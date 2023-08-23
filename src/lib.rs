@@ -12,6 +12,8 @@ The date module is a set of tools about date and datetime.
 日期和时间工具
  */
 pub mod date;
+/// id方法
+pub mod id_utils;
 /**
 interval
 区间
